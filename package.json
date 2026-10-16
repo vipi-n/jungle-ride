@@ -1,0 +1,27 @@
+{
+  "name": "tesla-roadster-3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive 3D Tesla Roadster explorer: orbit, drive and fly with an adaptive soundtrack",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite --port 5199",
+    "build": "vite build",
+    "preview": "vite preview --port 5199",
+    "shot": "node tools/shot.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "three": "^0.186.1",
+    "three-mesh-bvh": "^0.9.16"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1",
+    "vite": "^8.3.4"
+  }
+}

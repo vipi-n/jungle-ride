@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <body>
+    <script type="module">
+      import { AudioEngine } from '/src/audio/engine.js';
+      import { Score } from '/src/audio/music.js';
+      import { Sfx } from '/src/audio/sfx.js';
+
+      const stats = (buf, from = 0) => {
+        const out = { peak: 0, rms: 0, windows: [] };
+        const sr = buf.sampleRate;
+        const L = buf.getChannelData(0);
+        const R = buf.getChannelData(1);
+        let sum = 0;
+        let n = 0;
+        let wSum = 0;
+        let wN = 0;
+        for (let i = Math.floor(from * sr); i < L.length; i++) {
+          const a = Math.max(Math.abs(L[i]), Math.abs(R[i]));
+          if (a > out.peak) out.peak = a;
+          const s = (L[i] * L[i] + R[i] * R[i]) / 2;
+          sum += s;
+          n++;
+          wSum += s;
+          wN++;
+          if (wN === sr) {
+            out.windows.push(+(10 * Math.log10(wSum / wN + 1e-12)).toFixed(1));
+            wSum = 0;
+            wN = 0;
+          }
+        }
+        out.rms = +(10 * Math.log10(sum / n + 1e-12)).toFixed(1);
+        out.peakDb = +(20 * Math.log10(out.peak + 1e-12)).toFixed(1);
+        return out;
+      };
+
+      function wav(buf) {
+        const sr = buf.sampleRate;
+        const n = buf.length;
+        const data = new DataView(new ArrayBuffer(44 + n * 4));
+        const w = (o, s) => [...s].forEach((c, i) => data.setUint8(o + i, c.charCodeAt(0)));
+        w(0, 'RIFF');
+        data.setUint32(4, 36 + n * 4, true);
+        w(8, 'WAVE');
+        w(12, 'fmt ');
+        data.setUint32(16, 16, true);
+        data.setUint16(20, 1, true);
+        data.setUint16(22, 2, true);
+        data.setUint32(24, sr, true);
+        data.setUint32(28, sr * 4, true);
+        data.setUint16(32, 4, true);
+        data.setUint16(34, 16, true);
+        w(36, 'data');
+        data.setUint32(40, n * 4, true);
+        const L = buf.getChannelData(0);
+        const R = buf.getChannelData(1);
+        for (let i = 0; i < n; i++) {
+          data.setInt16(44 + i * 4, Math.max(-1, Math.min(1, L[i])) * 32767, true);
+          data.setInt16(46 + i * 4, Math.max(-1, Math.min(1, R[i])) * 32767, true);
+        }
+        return new Uint8Array(data.buffer);
+      }
+
+      window.render = async ({ levels, seconds, flavor = 'studio', events = [], wavOut = false }) => {
+        const sr = 44100;
+        const ctx = new OfflineAudioContext(2, sr * seconds, sr);
+        const e = new AudioEngine(ctx);
+        // offline currentTime stays 0 while scheduling; drive `now` from the loop instead
+        Object.defineProperty(e, 'now', { get: () => e.__now || 0 });
+        const score = new Score(e);
+        const sfx = new Sfx(e);
+        e.musicVol.gain.value = 0.7 * 0.9;
+        e.sfxVol.gain.value = 0.8;
+        score.setFlavor(flavor);
+        sfx.setAmbience(flavor);
+        score.start(0.05);
+        // levels: [[bar, level], ...]
+        const BAR = (60 / 104) * 4;
+        let t = 0;
+        const step = 0.05;
+        while (t < seconds) {
+          const bar = Math.floor(t / BAR);
+          for (const [b, l] of levels) if (bar >= b) score.setLevel(l);
+          for (const ev of events) {
+            if (!ev.done && t >= ev.at) {
+              ev.done = true;
+              if (ev.type === 'thrust') {
+                sfx.thrust();
+                score.impact(t + 0.01, 0.2);
+                score.surge(4);
+              }
+            }
+          }
+          score.scheduleUntil(t + 0.14);
+          t += step;
+          // advance a fake clock: offline ctx currentTime stays 0 until rendering, so
+          // patch `now` for sfx scheduling
+          e.__now = t;
+        }
+        const buf = await ctx.startRendering();
+        const result = stats(buf, 1);
+        if (wavOut) result.wav = Array.from(wav(buf));
+        return result;
+      };
+      window.__ready = true;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1254 @@
+:root {
+  --fg: #f4f4f4;
+  --fg-dim: rgba(244, 244, 244, 0.62);
+  --fg-faint: rgba(244, 244, 244, 0.36);
+  --panel: rgba(18, 18, 20, 0.55);
+  --panel-strong: rgba(14, 14, 16, 0.7);
+  --line: rgba(255, 255, 255, 0.12);
+  --accent: #3e6ae1;
+  --ease: cubic-bezier(0.22, 0.61, 0.21, 1);
+  font-family: 'Universal Sans Text', 'Gotham SSm', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Inter, Arial, sans-serif;
+}
+
+#ui {
+  position: fixed;
+  /* keep controls clear of the notch and the home indicator */
+  inset: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+  pointer-events: none;
+  color: var(--fg);
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+#ui.ready {
+  opacity: 1;
+}
+#ui::before,
+#ui::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+#ui::before {
+  top: 0;
+  height: 190px;
+  background: linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0));
+}
+#ui::after {
+  bottom: 0;
+  height: 170px;
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.28));
+}
+#ui.hidden::before,
+#ui.hidden::after {
+  opacity: 0;
+}
+#ui.hidden > *:not(.keep) {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+#ui button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.glass {
+  background: var(--panel);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+/* brand */
+.brand {
+  position: absolute;
+  left: 34px;
+  top: 28px;
+  transition: opacity 0.4s;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45), 0 0 2px rgba(0, 0, 0, 0.25);
+}
+.brand .wordmark {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.62em;
+  color: var(--fg);
+}
+.brand h1 {
+  margin: 10px 0 2px;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.brand p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fg-dim);
+  letter-spacing: 0.04em;
+}
+
+/* top right */
+.top-right {
+  position: absolute;
+  right: 28px;
+  top: 26px;
+  /* the settings popover opens over the view rail */
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.seg {
+  display: flex;
+  padding: 4px;
+  gap: 2px;
+  pointer-events: auto;
+}
+.seg button {
+  padding: 8px 14px;
+  border-radius: 10px;
+  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  transition: background 0.3s, color 0.3s;
+}
+.seg button:hover {
+  color: var(--fg);
+}
+.seg button.active {
+  background: rgba(255, 255, 255, 0.92);
+  color: #171a20;
+}
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* left: trims + specs */
+.trim-panel {
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  transform: translateY(-46%);
+  width: 238px;
+  padding: 18px 18px 16px;
+  pointer-events: auto;
+}
+.trim-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+.trim-tabs button {
+  flex: 1;
+  padding: 7px 0;
+  font-size: 11.5px;
+  border-radius: 8px;
+  color: var(--fg-dim);
+  border: 1px solid transparent !important;
+  transition: all 0.3s;
+}
+.trim-tabs button.active {
+  color: var(--fg);
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+.trim-tag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+.trim-name {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 4px 0 14px;
+}
+.specs {
+  display: grid;
+  gap: 12px;
+}
+.spec .v {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.spec .v small {
+  font-size: 14px;
+  font-weight: 400;
+  margin-left: 3px;
+  color: var(--fg-dim);
+}
+.spec .k {
+  font-size: 11.5px;
+  color: var(--fg-dim);
+  margin-top: 1px;
+}
+.trim-note {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--fg-dim);
+}
+.reserve {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--fg-faint);
+  line-height: 1.5;
+}
+.fade-swap {
+  transition: opacity 0.25s, transform 0.35s var(--ease);
+}
+.fade-swap.out {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* right: camera rail */
+.cam-rail {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  gap: 2px;
+  pointer-events: auto;
+}
+.cam-rail .label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--fg-faint);
+  text-align: center;
+  padding: 6px 0 6px;
+}
+.cam-rail button {
+  padding: 9px 14px;
+  font-size: 12px;
+  border-radius: 9px;
+  color: var(--fg-dim);
+  text-align: left;
+  transition: background 0.25s, color 0.25s;
+}
+.cam-rail button:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+}
+.cam-rail button.active {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* bottom centre */
+.bottom {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.caption {
+  text-align: center;
+  transition: opacity 0.6s var(--ease), transform 0.8s var(--ease), filter 0.6s;
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(4px);
+  margin-bottom: 4px;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+.caption.show {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.caption .t {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.caption .s {
+  font-size: 13px;
+  color: var(--fg-dim);
+  margin-top: 6px;
+}
+.aero {
+  display: flex;
+  padding: 4px;
+  pointer-events: auto;
+}
+.aero button {
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  transition: background 0.35s, color 0.35s;
+}
+.aero button.active {
+  background: rgba(255, 255, 255, 0.92);
+  color: #171a20;
+}
+.actions {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  pointer-events: auto;
+}
+.actions button {
+  box-sizing: border-box;
+  min-width: 58px;
+  padding: 9px 5px 7px;
+  white-space: nowrap;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: var(--fg-dim);
+  letter-spacing: 0.02em;
+  transition: background 0.25s, color 0.25s;
+  position: relative;
+}
+.actions button svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.actions button:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+}
+.actions button.active {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.13);
+}
+.actions button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #8fb1ff;
+  box-shadow: 0 0 8px #8fb1ff;
+}
+.actions button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.actions .sep {
+  width: 1px;
+  background: var(--line);
+  margin: 8px 2px;
+}
+
+/* bottom left: paint */
+.paint {
+  position: absolute;
+  left: 34px;
+  bottom: 30px;
+  pointer-events: auto;
+}
+.paint .name {
+  font-size: 12px;
+  color: var(--fg-dim);
+  margin-bottom: 10px;
+}
+.paint .name b {
+  color: var(--fg);
+  font-weight: 500;
+}
+.swatches {
+  display: flex;
+  gap: 10px;
+}
+.swatches button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s;
+  position: relative;
+}
+.swatches button:hover {
+  transform: scale(1.1);
+}
+.swatches button.active {
+  box-shadow: 0 0 0 2px rgba(20, 20, 20, 0.5), 0 0 0 4px #fff;
+}
+
+/* bottom right */
+.hint {
+  position: absolute;
+  right: 30px;
+  bottom: 32px;
+  font-size: 11.5px;
+  color: var(--fg-dim);
+  text-align: right;
+  line-height: 1.7;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+}
+.paint .name {
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* hotspots */
+.hotspots {
+  position: absolute;
+  inset: 0;
+}
+.hs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  pointer-events: auto;
+  transition: opacity 0.35s;
+}
+.hs::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25), 0 0 12px rgba(255, 255, 255, 0.7);
+}
+.hs::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  animation: pulse 2.2s var(--ease) infinite;
+}
+.hs .tip {
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  transform: translate(-6px, -50%);
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--panel-strong);
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.3s var(--ease);
+  pointer-events: none;
+}
+.hs:hover .tip {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+.hs.off {
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+/* info card */
+.info {
+  position: absolute;
+  right: 150px;
+  bottom: 170px;
+  width: 300px;
+  padding: 18px 20px 16px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s var(--ease), transform 0.5s var(--ease);
+  pointer-events: none;
+}
+.info.show {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.info h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 500;
+}
+.info p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-dim);
+}
+.info .row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.info .row button {
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #171a20 !important;
+}
+.info .row button.ghost {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--fg) !important;
+}
+.info .close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 18px;
+  color: var(--fg-faint);
+}
+
+.unhide {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  display: none !important;
+}
+.unhide svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+}
+#ui.hidden .unhide {
+  display: grid !important;
+}
+
+/* help */
+.help {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.help.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.help .glass {
+  padding: 22px 26px;
+  min-width: 340px;
+}
+.help h3 {
+  margin: 0 0 14px;
+  font-weight: 500;
+  font-size: 16px;
+}
+.help dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 18px;
+  margin: 0;
+  font-size: 13px;
+}
+.help dt {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  justify-self: start;
+}
+.help dd {
+  margin: 0;
+  color: var(--fg-dim);
+}
+
+/* loader */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: #0b0b0c;
+  color: #f4f4f4;
+  transition: opacity 1.1s cubic-bezier(0.22, 0.61, 0.21, 1), visibility 1.1s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+}
+#loader.done {
+  opacity: 0;
+  visibility: hidden;
+}
+#loader .inner {
+  text-align: center;
+}
+#loader .wm {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.7em;
+  margin-right: -0.7em;
+}
+#loader .sub {
+  margin-top: 14px;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+}
+#loader .bar {
+  width: 180px;
+  height: 2px;
+  margin: 26px auto 0;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  border-radius: 2px;
+}
+#loader .bar i {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: #fff;
+  animation: load 1.2s ease-in-out infinite;
+}
+@keyframes load {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+#loader .start,
+#loader .note {
+  display: none;
+}
+#loader.loaded .bar {
+  display: none;
+}
+#loader.loaded .start {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 11px 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f4f4f4;
+  font: 500 13px/1 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  animation: rise 0.9s cubic-bezier(0.22, 0.61, 0.21, 1) both;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+#loader.loaded .start:hover,
+#loader.loaded .start:focus-visible {
+  background: #f4f4f4;
+  color: #111;
+  outline: none;
+}
+#loader.loaded .note {
+  display: block;
+  margin-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.38);
+  animation: rise 0.9s 0.15s cubic-bezier(0.22, 0.61, 0.21, 1) both;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* sound + settings */
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sound-btn.muted {
+  color: var(--fg-faint);
+}
+.settings {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 290px;
+  padding: 14px 16px 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s, transform 0.35s var(--ease);
+}
+.settings.show {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.set-title {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 8px;
+}
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.set-row span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.set-row b {
+  font-size: 13px;
+  font-weight: 500;
+}
+.set-row small {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+.set-row input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.switch {
+  width: 36px;
+  height: 21px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.16);
+  position: relative;
+  flex: none;
+  transition: background 0.25s;
+}
+.switch::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.25s var(--ease);
+}
+.set-row input:checked + .switch {
+  background: var(--accent);
+}
+.set-row input:checked + .switch::after {
+  transform: translateX(15px);
+}
+.set-row input:focus-visible + .switch {
+  box-shadow: 0 0 0 2px rgba(143, 177, 255, 0.7);
+}
+.set-range {
+  width: 100%;
+  margin: 0 0 6px;
+  accent-color: #f4f4f4;
+}
+.set-range:disabled {
+  opacity: 0.3;
+}
+/* optional views / modes */
+.cam-rail [data-cam='chase'],
+.cam-rail [data-cam='under'] {
+  display: none;
+}
+#ui.free-drive .cam-rail [data-cam='chase'],
+#ui.underside .cam-rail [data-cam='under'] {
+  display: block;
+}
+#ui.free-drive [data-act='drive'] {
+  display: none;
+}
+#ui.free-drive .hint {
+  display: none;
+}
+
+/* free drive HUD */
+.drive-hud {
+  position: absolute;
+  right: 30px;
+  bottom: 28px;
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5);
+}
+#ui.free-drive .drive-hud {
+  display: flex;
+}
+.drive-hud .speed b {
+  font-size: 46px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.drive-hud .speed span {
+  margin-left: 6px;
+  font-size: 13px;
+  color: var(--fg-dim);
+}
+.drive-hud .gear {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+}
+.drive-hud .gear i {
+  font-style: normal;
+  color: var(--fg-faint);
+  transition: color 0.2s;
+}
+.drive-hud .gear i.on {
+  color: var(--fg);
+}
+.drive-hud.boost .speed b {
+  color: #b9cdff;
+  text-shadow: 0 0 18px rgba(120, 160, 255, 0.8);
+}
+.drive-hud .keys {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+.drive-hud kbd {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 10px;
+  padding: 1px 5px;
+  margin: 0 1px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+}
+/* touch Free Drive: steering pad, pedals and a slim toolbar */
+.touch-drive,
+.drive-bar,
+.cam-toggle {
+  display: none;
+}
+.touch-drive .steer,
+#ui .touch-drive button {
+  background: rgba(18, 18, 20, 0.42);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  touch-action: none;
+}
+.touch-drive .steer {
+  position: absolute;
+  left: 18px;
+  bottom: 24px;
+  width: 172px;
+  height: 84px;
+  display: flex;
+  border-radius: 42px;
+  pointer-events: auto;
+}
+.touch-drive .steer i {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 42px;
+  transition: background 0.12s;
+}
+.touch-drive .steer[data-dir='left'] .l,
+.touch-drive .steer[data-dir='right'] .r {
+  background: rgba(255, 255, 255, 0.26);
+}
+.touch-drive svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+.touch-drive .pedals {
+  position: absolute;
+  right: 18px;
+  bottom: 24px;
+  display: grid;
+  grid-template-columns: 64px 84px;
+  grid-template-rows: 58px 84px;
+  grid-template-areas: '. boost' 'brake gas';
+  gap: 10px;
+  align-items: end;
+  justify-items: center;
+}
+#ui .touch-drive button {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: background 0.12s, transform 0.12s;
+}
+#ui .touch-drive button.on {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(0.94);
+}
+.touch-drive .gas {
+  grid-area: gas;
+  width: 84px;
+  height: 84px;
+}
+.touch-drive .brake {
+  grid-area: brake;
+  width: 64px;
+  height: 64px;
+}
+.touch-drive .boost {
+  grid-area: boost;
+  width: 58px;
+  height: 58px;
+  color: #b9cdff;
+}
+.drive-bar {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  gap: 8px;
+}
+#ui .drive-bar button {
+  width: 54px;
+  padding: 8px 0 6px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--fg-dim);
+}
+#ui .drive-bar button.active {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.2);
+}
+.drive-bar svg,
+.cam-toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (pointer: coarse) {
+  .help-btn {
+    display: none;
+  }
+  #ui.free-drive .touch-drive {
+    display: block;
+  }
+  #ui.free-drive .drive-bar {
+    display: flex;
+  }
+  /* driving on a touch screen: only the road, the pedals and the speed */
+  #ui.free-drive .brand,
+  #ui.free-drive .trim-panel,
+  #ui.free-drive .paint,
+  #ui.free-drive .aero,
+  #ui.free-drive .actions,
+  #ui.free-drive .cam-rail,
+  #ui.free-drive .top-right .env,
+  #ui.free-drive .hotspots,
+  #ui.free-drive .info,
+  #ui.free-drive .hint,
+  #ui.free-drive .drive-hud .keys {
+    display: none;
+  }
+  #ui.free-drive .drive-hud {
+    top: 74px;
+    bottom: auto;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+  #ui.free-drive .bottom {
+    bottom: 190px;
+  }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  #ui.free-drive .bottom {
+    bottom: 26px;
+  }
+}
+
+/* fade veil for environment switches */
+#veil {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: opacity 0.45s ease;
+}
+#veil.on {
+  opacity: 1;
+}
+
+/* the action bar would run into the corner hints */
+@media (max-width: 1400px) {
+  .hint,
+  .drive-hud .keys {
+    display: none;
+  }
+}
+@media (max-width: 1240px) {
+  #ui .actions button {
+    min-width: 52px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 1100px) {
+  .trim-panel,
+  .hint {
+    display: none;
+  }
+  .paint {
+    bottom: 110px;
+  }
+  .info {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 200px;
+  }
+  .info.show {
+    transform: translateX(50%);
+  }
+}
+/* phones: narrow portrait or short landscape */
+@media (max-width: 760px), (max-height: 520px) {
+  .brand {
+    left: 18px;
+    top: 16px;
+  }
+  .brand .wordmark {
+    font-size: 11px;
+  }
+  .brand h1 {
+    margin: 6px 0 0;
+    font-size: 24px;
+  }
+  .brand p {
+    display: none;
+  }
+  .top-right {
+    top: 14px;
+    right: 14px;
+    gap: 6px;
+  }
+  #ui .seg button {
+    padding: 7px 10px;
+    font-size: 12.5px;
+  }
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .settings {
+    top: 46px;
+    width: 260px;
+  }
+
+  /* the view rail collapses into one toggle */
+  .cam-rail {
+    top: 62px;
+    right: 14px;
+    transform: none;
+    padding: 4px;
+    max-height: calc(100% - 76px);
+    overflow-y: auto;
+  }
+  .cam-rail .label {
+    display: none;
+  }
+  #ui .cam-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 92px;
+    padding: 7px 8px 7px 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    color: var(--fg);
+  }
+  .cam-toggle svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    transition: transform 0.25s var(--ease);
+  }
+  .cam-rail.open .cam-toggle svg {
+    transform: rotate(180deg);
+  }
+  #ui .cam-rail [data-cam] {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+  #ui .cam-rail:not(.open) [data-cam] {
+    display: none;
+  }
+
+  .paint {
+    left: 14px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+  .paint .name {
+    display: none;
+  }
+  .swatches {
+    flex-direction: column;
+    gap: 9px;
+  }
+  .swatches button {
+    width: 24px;
+    height: 24px;
+  }
+
+  .bottom {
+    bottom: 10px;
+    gap: 8px;
+  }
+  .caption .t {
+    font-size: 22px;
+  }
+  .caption .s {
+    font-size: 12px;
+  }
+  #ui .aero button {
+    padding: 7px 11px;
+    font-size: 12.5px;
+  }
+  .actions {
+    max-width: calc(100vw - 16px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    touch-action: pan-x;
+    padding: 4px;
+  }
+  #ui .actions button {
+    flex: none;
+    min-width: 50px;
+    padding: 7px 4px 5px;
+    gap: 3px;
+    font-size: 10.5px;
+  }
+  .actions button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .info,
+  .info.show {
+    left: 12px;
+    right: 12px;
+    bottom: 150px;
+    width: auto;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .info {
+    transform: translateY(12px);
+  }
+  .info.show {
+    transform: none;
+  }
+
+  #ui.free-drive .drive-hud {
+    top: 74px;
+    bottom: auto;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+  .drive-hud .speed b {
+    font-size: 40px;
+  }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  /* captions would sit on the car: lift them to the top (Free Drive keeps its
+     speed readout there, so its captions stay low between the pedals) */
+  .bottom {
+    left: 0;
+    right: 0;
+    transform: none;
+  }
+  .caption {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 66px);
+    left: 0;
+    right: 0;
+  }
+  #ui.free-drive .caption {
+    position: static;
+  }
+}
+@media (max-width: 760px) and (orientation: portrait) {
+  /* environments drop under the icons so the brand keeps the top-left */
+  .top-right .env {
+    position: absolute;
+    top: 44px;
+    right: 0;
+  }
+  .cam-rail {
+    top: 104px;
+  }
+  .paint {
+    top: 120px;
+    transform: none;
+  }
+}
